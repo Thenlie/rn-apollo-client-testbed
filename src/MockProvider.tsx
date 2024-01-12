@@ -37,7 +37,7 @@ const MockedProvider = ({
   };
 
   return (
-    <ApolloMockedProvider mocks={mocks} resolvers={resolvers} {...props}>
+    <ApolloMockedProvider mocks={mocks} {...props}>
       {children}
     </ApolloMockedProvider>
   );

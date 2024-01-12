@@ -23,7 +23,7 @@ const GET_EVENT_CONFIG = gql`
  * https://www.apollographql.com/docs/react/development-testing/testing/#defining-mocked-responses
  */
 const mockResponse = {
-  delay: Infinity,
+  delay: 30,
   request: {
     query: GET_EVENT_CONFIG,
     variables: {
@@ -60,19 +60,24 @@ const EventConfigDemo = () => {
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>{error.message}</Text>;
 
-  return <Text>{data.event.appConfig.id}</Text>;
+  return <Text>{data?.event.appConfig.id}</Text>;
 };
 
 describe("mockApolloProvider test", () => {
-  it("properly renders infinite loading state", async () => {
+  it("properly renders error state for network errors", async () => {
+    const { request } = mockResponse;
     render(
-      <MockedProvider mocks={[mockResponse]}>
+      <MockedProvider
+        mocks={[
+          {
+            request,
+            error: new Error("Test network error!"),
+          },
+        ]}
+      >
         <EventConfigDemo />
       </MockedProvider>,
     );
-    expect(await screen.findByText("Loading...")).toBeDefined();
-    expect(
-      screen.queryByText("73dd16a2-ea98-4ec7-bd4e-9f9afcf6dfdd"),
-    ).toBeNull();
+    expect(await screen.findByText("Test network error!")).toBeDefined();
   });
 });
