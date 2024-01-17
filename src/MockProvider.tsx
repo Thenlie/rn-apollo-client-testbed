@@ -3,7 +3,6 @@ import {
   MockedProvider as ApolloMockedProvider,
   MockedProviderProps,
 } from "@apollo/client/testing";
-import { Resolvers } from "@apollo/client";
 
 interface MockProviderProps extends MockedProviderProps {
   children?: React.ReactNode;
@@ -15,32 +14,25 @@ interface MockProviderProps extends MockedProviderProps {
 const MockedProvider = ({
   children,
   mocks = [],
+  resolvers,
   ...props
 }: MockProviderProps) => {
-  console.log("In provider", JSON.stringify(mocks));
-  const resolvers: Resolvers = {
-    Query: {
-      event: () => ({
-        __typename: "Event",
-        appConfig: {
-          __typename: "EventAppConfig",
-          id: "73dd16a2-ea98-4ec7-bd4e-9f9afcf6dfdd",
-          features: {
-            MY_BADGE: {
-              isEnabled: true,
-            },
-            // other features truncated for brevity
-          },
-        },
-      }),
-    },
-  };
-
-  return (
-    <ApolloMockedProvider mocks={mocks} {...props}>
-      {children}
-    </ApolloMockedProvider>
-  );
+  console.log(!!resolvers);
+  if (!!resolvers) {
+    console.log("Yes resolvers");
+    return (
+      <ApolloMockedProvider mocks={mocks} resolvers={resolvers} {...props}>
+        {children}
+      </ApolloMockedProvider>
+    );
+  } else {
+    console.log("No resolvers");
+    return (
+      <ApolloMockedProvider mocks={mocks} {...props}>
+        {children}
+      </ApolloMockedProvider>
+    );
+  }
 };
 
 export default MockedProvider;

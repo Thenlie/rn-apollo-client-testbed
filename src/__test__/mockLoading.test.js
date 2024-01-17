@@ -1,7 +1,6 @@
 import React from "react";
 import { Text } from "react-native";
 import { render, screen } from "@testing-library/react-native";
-import { MockedResponse } from "@apollo/client/testing";
 import MockedProvider from "../MockProvider";
 import { gql, useQuery } from "@apollo/client";
 
@@ -64,20 +63,18 @@ const EventConfigDemo = () => {
 };
 
 describe("mockApolloProvider test", () => {
-  it("properly renders error state for network errors", async () => {
-    const { request } = mockResponse;
+  it("properly renders infinite loading state", async () => {
     render(
       <MockedProvider
-        mocks={[
-          {
-            request,
-            error: new Error("Test network error!"),
-          },
-        ]}
+        mocks={[{ ...mockResponse, delay: Infinity }]}
+        addTypename={false}
       >
         <EventConfigDemo />
       </MockedProvider>,
     );
-    expect(await screen.findByText("Test network error!")).toBeDefined();
+    expect(await screen.findByText("Loading...")).toBeDefined();
+    expect(
+      screen.queryByText("73dd16a2-ea98-4ec7-bd4e-9f9afcf6dfdd"),
+    ).toBeNull();
   });
 });
